@@ -1,18 +1,43 @@
 class puppetmaster::config {
 
-    $agent_hostname = $puppetmaster::agent_hostname
+   file {'/etc/puppet/hiera.yaml':
+        ensure => file,
+        source => 'puppet:///modules/puppetmaster/hiera.yaml',
+   }
+    
+   file {'/etc/puppet/hieradata':
+        ensure => directory,
+   }
 
-    exec {'patch_hosts':
+   file {'/etc/puppet/hieradata/nodes':
+        ensure => directory,
+        source => 'puppet:///modules/puppetmaster/nodes',
+        recurse => true,
+        require => File['/etc/puppet/hieradata'],
+   }
+
+   file {'/etc/puppet/hieradata/common.yaml':
+        ensure => file,
+        source => 'puppet:///modules/puppetmaster/common.yaml',
+        require => File['/etc/puppet/hieradata'],
+   }
+
+   file {'/etc/puppet/autosign.conf':
+        ensure => file,
+        content => "$puppetmaster::agent_hostname",
+   }
+
+   exec {'patch_hosts':
         path => '/usr/bin',
         command => "echo \"$::ipaddress puppet\" >> /etc/hosts",
         before => Exec['generate-ca'],
-    }
+   }
 
-    file {'master-config':
+   file {'master-config':
         source => 'puppet:///modules/puppetmaster/puppet.conf',
         path => '/etc/puppet/puppet.conf',
         before => Exec['generate-ca'],
-    }
+   }
 
    exec {'generate-ca':
         path => '/usr/bin',
@@ -33,33 +58,7 @@ class puppetmaster::config {
 
    file {'/etc/puppet/manifests/site.pp':
         ensure => file,
-        content => template("${module_name}/site.pp.erb"),
+        source => 'puppet:///modules/puppetmaster/site.pp',
    }
 
-   file {'/etc/puppet/autosign.conf':
-        ensure => file,
-        content => template("${module_name}/autosign.conf.erb"),
-   }
-
-   file {'/etc/puppet/hiera.yaml':
-        ensure => file,
-        source => 'puppet:///modules/puppetmaster/hiera.yaml',
-   }
-
-   file {'/etc/puppet/hieradata':
-        ensure => directory,
-   }
-
-   file {'/etc/puppet/hieradata/nodes':
-        ensure => directory,
-        source => 'puppet:///modules/puppetmaster/nodes',
-        recurse => true,
-        require => File['/etc/puppet/hieradata'],
-   }
-
-   file {'/etc/puppet/hieradata/common.yaml':
-        ensure => file,
-        source => 'puppet:///modules/puppetmaster/common.yaml',
-        require => File['/etc/puppet/hieradata'],
-   }
 }

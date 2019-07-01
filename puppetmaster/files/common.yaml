@@ -1,5 +1,1 @@
 ---
-mysql::repo_url: https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
-mysql::root_password: toor
-mysql::new_username: dummy
-mysql::new_username_pwd: ditto
