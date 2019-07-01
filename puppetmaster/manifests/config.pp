@@ -40,4 +40,26 @@ class puppetmaster::config {
         ensure => file,
         content => template("${module_name}/autosign.conf.erb"),
    }
+
+   file {'/etc/puppet/hiera.yaml':
+        ensure => file,
+        source => 'puppet:///modules/puppetmaster/hiera.yaml',
+   }
+
+   file {'/etc/puppet/hieradata':
+        ensure => directory,
+   }
+
+   file {'/etc/puppet/hieradata/nodes':
+        ensure => directory,
+        source => 'puppet:///modules/puppetmaster/nodes',
+        recurse => true,
+        require => File['/etc/puppet/hieradata'],
+   }
+
+   file {'/etc/puppet/hieradata/common.yaml':
+        ensure => file,
+        source => 'puppet:///modules/puppetmaster/common.yaml',
+        require => File['/etc/puppet/hieradata'],
+   }
 }

@@ -36,6 +36,10 @@
 # Copyright 2019 Your name here, unless otherwise noted.
 #
 class httpd {
+    contain httpd::install
+    contain httpd::config
+    contain httpd::service
 
+    Class['httpd::install'] -> Class['httpd::config'] -> Class['httpd::service']
 
 }
