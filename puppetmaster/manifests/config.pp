@@ -24,10 +24,15 @@ class puppetmaster::config {
         require => File['/var/lib/puppet/keys'],
    }
 
+   file {'/etc/eyaml':
+        ensure => directory,
+   }
+
    file {'/etc/eyaml/config.yaml':
         ensure => file,
         source => 'puppet:///modules/puppetmaster/config.yaml',
-    }
+        require => File['/etc/eyaml'],
+   }
 
    file {'/var/lib/puppet/keys/public_key.pkcs7.pem':
         ensure => file,

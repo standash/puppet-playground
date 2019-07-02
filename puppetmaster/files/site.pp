@@ -1,5 +1,1 @@
-#hiera_include('classes')
-
-node 'agent.uni.lux' {
-    include mysql
-}
+hiera_include('classes')
