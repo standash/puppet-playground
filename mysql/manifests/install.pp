@@ -1,9 +1,16 @@
 class mysql::install {
 
+
+   package {'hiera-eyaml':
+       provider => gem,
+       ensure => installed,
+   }
+
    package {'mysql-repo':
        provider => 'rpm',
        ensure => installed,
        source => $mysql::repo_url,
+       require => Package['hiera-eyaml'],
    }
 
    package {'yum-utils':
@@ -21,5 +28,6 @@ class mysql::install {
        ensure => installed,
        require => Exec['enable-required-repo'],
    }        
+
 
 }

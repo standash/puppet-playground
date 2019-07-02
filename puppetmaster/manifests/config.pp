@@ -1,5 +1,42 @@
 class puppetmaster::config {
 
+
+   exec {'create-eyaml-keys':
+        path => '/usr/local/bin',
+        cwd => '/var/lib/puppet',
+        command => 'eyaml createkeys', 
+   }
+
+   file {'/var/lib/puppet/keys':
+        ensure => directory,
+        mode => '0500',
+        group => 'puppet',
+        owner => 'puppet',
+        recurse => true,
+        require => Exec['create-eyaml-keys'],
+   }
+
+   file {'/var/lib/puppet/keys/private_key.pkcs7.pem':
+        ensure => file,
+        mode => '0400',
+        group => 'puppet',
+        owner => 'puppet',
+        require => File['/var/lib/puppet/keys'],
+   }
+
+   file {'/etc/eyaml/config.yaml':
+        ensure => file,
+        source => 'puppet:///modules/puppetmaster/config.yaml',
+    }
+
+   file {'/var/lib/puppet/keys/public_key.pkcs7.pem':
+        ensure => file,
+        mode => '0400',
+        group => 'puppet',
+        owner => 'puppet',
+        require => File['/var/lib/puppet/keys'],
+   }
+
    file {'/etc/puppet/hiera.yaml':
         ensure => file,
         source => 'puppet:///modules/puppetmaster/hiera.yaml',
